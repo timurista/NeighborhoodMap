@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Neighborhood Map</title>
+		<style>
+			#map-canvas {
+				height:100%;
+				width:100%;
+			}
+			ul li { display: inline; }
+		</style>
+
+	</head>
+	<body>
+		<div id="container">
+			<div id="search">This location is <span id="location" data-bind="text: location"></span></div>
+			<ul class="listView" data-bind="foreach:listView">
+				<li class="listItem" data-bind="text: name"></li>
+			</ul>
+			<div class="map">Map Here</div>
+			<div id="map"></div>
+			<div id="map-canvas"></div>
+		</div>
+		<!-- load map using google maps api -->
+		<!-- api key -->
+	</body>
+	<script src="js/jquery-1.11.2.min.js"></script>
+  <script src="js/knockout-3.3.0.js"></script>
+  <script src="js/app.js"></script>
+  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCgjs9IH-A7moEOPrJ7TZs2av44X69slfg"></script>
+  <script src="js/map.js"></script>
+</html>
