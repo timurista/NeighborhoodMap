@@ -2,31 +2,66 @@
 <html>
 	<head>
 		<title>Neighborhood Map</title>
-		<style>
-			#map-canvas {
-				height:100%;
-				width:100%;
-			}
-			ul li { display: inline; }
-		</style>
-
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		<link rel="stylesheet" href="css/custom.css">
 	</head>
 	<body>
-		<div id="container">
-			<div id="search">This location is <span id="location" data-bind="text: location"></span></div>
-			<ul class="listView" data-bind="foreach:listView">
-				<li class="listItem" data-bind="text: name"></li>
-			</ul>
-			<div class="map">Map Here</div>
-			<div id="map"></div>
-			<div id="map-canvas"></div>
+		<div id="">
+			<div class="row">
+				<!-- filter -->
+				<div class="col-sm-4">
+					<label for="filter">Search</label>
+					<button data-bind="click: toggleAutoComplete, text: acToggleDisplay(), css: acButton">{{acToggleDisplay}}</button>
+					<input type="text" id="filter" class="form-control" data-bind="value: filterText, valueUpdate: ['blur']" placeholder="enter search term"></input>
+					<input type="text" id="firstFilter" class="form-control" data-bind="value: filterText, valueUpdate: ['blur']" placeholder="enter search term" style="display:none"></input>
+				</div>
+
+				<div id="search" class="col-sm-4">
+					<label for="location">This location is</label>
+					<input type="text" id="location" class="form-control" data-bind="value: location"></input>
+				</div>
+				<div class="col-sm-2">
+					<label for="itemSearch">Look for</label>
+					<input type="text" id="itemSearch" data-bind="value:itemSearch" class="form-control" ></input>
+				</div>
+				<div class="col-sm-2">	
+					<button id="submit" class='btn btn-secondary' data-bind="click: update">Reset location</button>		
+				</div>
+			</div>
+
+			<div class="row">
+				<!-- The area to display results -->
+				<div class="col-sm-4 sidebar">
+					<table data-bind="foreach:filteredResults" class="table table-striped">
+						<tr>
+							<td class="listItem" data-bind="text: name,  click: show, $parent.setFilter(name) "></td>
+						</tr>
+					</table>
+				</div>
+			    <!-- Display map -->
+				<div class="col-sm-8 map-container" >
+				    <div id="map-canvas">
+				</div>
+				</div>
+			
+				<!-- <div class="col-xs-8"> -->
+					<!-- <div id="map-canvas">
+						<div id="map" class="col-xs-8"></div>
+					</div> -->
+				<!-- </div> -->
+			</div>
+			</div>
+
 		</div>
 		<!-- load map using google maps api -->
 		<!-- api key -->
 	</body>
 	<script src="js/jquery-1.11.2.min.js"></script>
   <script src="js/knockout-3.3.0.js"></script>
-  <script src="js/app.js"></script>
+  <!-- for autocomplete -->
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+
   <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCgjs9IH-A7moEOPrJ7TZs2av44X69slfg"></script>
+  <script src="js/app.js"></script>
   <script src="js/map.js"></script>
 </html>

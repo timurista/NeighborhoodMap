@@ -7,19 +7,19 @@
   	//get geocoder for converting address to lat/lang
   	var geocoder = new google.maps.Geocoder();
   	//update using jquery
-  	console.log($('#location').html())
-  	var address = $('#location').html();
+  	console.log($('#location').val())
+  	var address = $('#location').val();
   	//map options origin
     var mapOptions = {
       center: { lat: -34.397, lng: 150.644},
       zoom: 14
     };
-    var map = new google.maps.Map(document.getElementById('map-canvas'),
-        mapOptions);
-    $map= document.getElementById('map-canvas');
-    $map.style.height="100%";
-    $map.style.width="100%";
-    $map.style.position="absolute";
+    // var map = new google.maps.Map(document.getElementById('map-canvas'),
+    //     mapOptions);
+    // $map= document.getElementById('map-canvas');
+    // $map.style.height="300 px";
+    // $map.style.width="66%";
+    // $map.style.position="absolute";
 
 
     //geocoder dom example
@@ -43,27 +43,24 @@
           });
 
           //add multiple markers
-          //console.log(viewModel.listView());
-          viewModel.listView().forEach(function (obj) {
-          	//console.log(obj.location.lat);
-          	//console.log(obj.location.lng);
-          var latLang = new google.maps.LatLng(obj.location.lat,obj.location.lng);
-        var infowindow = new google.maps.InfoWindow({
-            content: '<b>' + obj.name + '</b>',
-            size: new google.maps.Size(150, 50)
-          });
-          var newMarker = new google.maps.Marker({
-            position: obj.location,
-            map: map,
-            title: obj.lcation
-          });
+          // viewModel.listView().forEach(function (obj) {
+          // 	//console.log(obj.location.lat);
+          // 	//console.log(obj.location.lng);
+          //   var latLang = new google.maps.LatLng(obj.location.lat,obj.location.lng);
+          //   var infowindow = new google.maps.InfoWindow({
+          //       content: '<b>' + obj.name + '</b>', //add something later,
+          //       size: new google.maps.Size(150, 50)
+          //   });
+          //   var newMarker = new google.maps.Marker({
+          //     position: obj.location,
+          //     map: map,
+          //     title: obj.name //name of place 
+          //   });
+          //   obj.marker = newMarker;
 
-
-          })
-
-          google.maps.event.addListener(marker, 'click', function() {
-            infowindow.open(map, marker);
-          });
+          //   //add dom listener
+          //   google.maps.event.addListener(newMarker, 'click', function() { infowindow.open(map, newMarker);});
+          // });
 
         } else {
           alert("No results found");
@@ -75,8 +72,10 @@
   }
 }
 google.maps.event.addDomListener(window, 'load', initialize);
-
-
+google.maps.event.addDomListener(document.getElementById('submit'), 'click', function () {
+    initialize();
+    // map.setCenter(new google.maps.LatLng(10.23,123.45));
+});
 //render function
 //need to render change in dom to change in map
 
