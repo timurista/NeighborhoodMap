@@ -14,8 +14,6 @@ html, body {
 	position: absolute;
 }
 
-
-
 ul {
     overflow-y: scroll;
 }
@@ -34,7 +32,6 @@ ul {
 	overflow: auto;
 	height:500px;
 }
-
 
 /* handling the autocomplete UI */
 .ui-autocomplete {

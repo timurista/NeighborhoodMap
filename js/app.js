@@ -34,7 +34,6 @@ var viewModel = function () {
         if (!self.autocompleteAllowed()) {
             self.autocompleteAllowed(true);
             $("#filter").autocomplete({ source: self.listNames() });
-
             // because of a bug with chrome, 2 input fields must be created simulating autoComplete enable and disable
             $("#filter").show();
             // filter without autoCompletes
@@ -179,3 +178,4 @@ var viewModel = function () {
 vm = new viewModel()
 ko.applyBindings(vm);
 vm.update();
+
