@@ -1,3 +1,12 @@
+   // load streetview
+var getStreetViewImage = function (obj) {
+    var address = obj.location.lat+', '+obj.location.lng;
+    var params="size=200x100&location="+address;
+    var streetViewUrl = "http://maps.googleapis.com/maps/api/streetview?"+params;
+    return '<img class="bgimg" src="'+streetViewUrl+'">';
+}
+
+
 //wikipedia json-p requests
 var wikiAjaxCall = function (obj) {
     var wikiURL = 'http://en.wikipedia.org/w/api.php?action=opensearch&search='+obj.name+'&format=json&callback=wikiCallback';
@@ -159,17 +168,16 @@ var viewModel = function () {
                     var fbook = (typeof obj.contact.facebookName === 'undefined') ? 'None' : obj.contact.facebookName;
                     var users = (typeof obj.stats.usersCount === 'undefined') ? 'No User Information' : obj.stats.usersCount;
                     var webLink = (typeof obj.url === 'undefined') ? 'No Website' : '<a href="'+obj.url+'">Website</a>';
-       
-
-
                     var here = obj.hereNow.summary;
 
                     //sets wikipedia info
                     var wikiList = wikiAjaxCall(obj);
+                    obj.img = getStreetViewImage(obj);
 
                     var contentString =
                       '<h1 id="firstHeading" class="firstHeading">'+obj.name+'</h1>'+
                       '<div id="bodyContent">'+
+                      obj.img+
                       '<p>'+here+'</p>'+
                       '<p><em>'+phone+'</em></p>'+
                       '<p>Facebook name: '+fbook+'</p>'+
@@ -177,6 +185,7 @@ var viewModel = function () {
                       '<p>Number of Users: <strong>'+users+'</strong></p>'+
                       wikiList+
                       '</div>';
+
 
                     var latLang = new google.maps.LatLng(obj.location.lat,obj.location.lng);
                     var infowindow = new google.maps.InfoWindow({

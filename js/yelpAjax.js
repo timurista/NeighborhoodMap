@@ -2,6 +2,23 @@
  * Generates a random number and returns it as a string for OAuthentication
  * @return {string}
  */
+
+// yelp search query
+var YELP_BASE_URL='http://api.yelp.com/v2/search/?';
+//'term='+otac+'&location='+San Francisco, CA;
+
+// API v2.0
+var YELP_KEY = 'UvpeGpN8NJ3Rge_0z6GwgA';
+var YELP_KEY_SECRET = 'AfRebu5_WYYCeLuj-0_eFifi5Tc';
+var YELP_TOKEN = 'il-Ouc6rd25qOjX76jyVTupGn_5J3P14';
+var YELP_TOKEN_SECRET = 'uy2PwjdgQTZxeXM3kgOMlvkFKS0';
+
+
+// API v1.0 (deprecated)
+// YWSID
+// Key ZjW_gCX-boUBP8tNZtWr3w
+
+
 function nonce_generate() {
   return (Math.floor(Math.random() * 1e12).toString());
 }

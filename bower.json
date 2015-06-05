@@ -1,0 +1,21 @@
+{
+  "name": "NeighborhoodMap",
+  "version": "1.0.0",
+  "homepage": "https://github.com/timurista/NeighborhoodMap",
+  "authors": [
+    "timurista <timothy.urista@gmail.com>"
+  ],
+  "description": "neighborhood map project",
+  "moduleType": [
+    "globals",
+    "node"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

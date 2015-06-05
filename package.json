@@ -1,0 +1,34 @@
+{
+  "name": "NeighborhoodMap",
+  "version": "1.0.0",
+  "description": "A map of the surrounding area I live. It includes a list of local places provided by a third-party api.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/timurista/NeighborhoodMap.git"
+  },
+  "keywords": [
+    "neighborhood",
+    "map",
+    "search",
+    "foursqaure",
+    "places"
+  ],
+  "author": "Tim Urista",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/timurista/NeighborhoodMap/issues"
+  },
+  "homepage": "https://github.com/timurista/NeighborhoodMap",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-less": "^1.0.1",
+    "grunt-contrib-uglify": "^0.9.1",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-phpunit": "^0.3.6"
+  }
+}

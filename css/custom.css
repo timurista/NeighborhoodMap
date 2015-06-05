@@ -1,20 +1,26 @@
 html, body {
   height: 100%;
 }
-#map-canvas {
-	margin: 0;
-	padding: 0;
-	height: 500px;
-	width:100%;
-	position: absolute;
-	right: 0;
+
+#container {
+	padding: 10px;
 }
+
+#map-canvas {
+	margin: 2px;
+	padding: 2px;
+	height: 500px;
+	width:95%;
+	position: absolute;
+	/*right: 0;*/
+}
+
+
+
 ul {
     overflow-y: scroll;
 }
-.map-container {
-    padding: 2px;
-}
+
 .highlighted {
 	background-color: blue;
 }
