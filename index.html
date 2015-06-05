@@ -8,30 +8,36 @@
 	<body>
 		<div id="container">
 			<div class="row">
-				<!-- filter -->
+				<!-- The search bar user input to filter results -->
 				<div class="col-sm-4">
 					<label for="filter">Search</label>
+					<!-- This includes auto complete -->
 					<button data-bind="click: toggleAutoComplete, text: acToggleDisplay(), css: acButton">{{acToggleDisplay}}</button>
 					<input type="text" id="filter" class="form-control" data-bind="value: filterText, valueUpdate: ['blur']" placeholder="enter search term"></input>
-					<input type="text" id="firstFilter" class="form-control" data-bind="value: filterText, valueUpdate: ['blur']" placeholder="enter search term" style="display:none"></input>
+					<!-- second input for filter is needed, initially display is none and does not use autocomplete -->
+					<input type="text" id="acDisabledFilter" class="form-control" data-bind="value: filterText, valueUpdate: ['blur']" placeholder="enter search term" style="display:none"></input>
 				</div>
 
 				<div id="search" class="col-sm-4">
+					<!-- user can change the search location and gets a list of new places -->
 					<label for="location">This location is</label>
 					<input type="text" id="location" class="form-control" data-bind="value: location"></input>
 				</div>
 				<div class="col-sm-2">
+					<!-- User can search for specific kinds of items here, the api request is altered accordingly -->
 					<label for="itemSearch">Look for</label>
 					<input type="text" id="itemSearch" data-bind="value:itemSearch" class="form-control" ></input>
 				</div>
 				<div class="col-sm-2">	
-					<button id="submit" class='btn btn-secondary' data-bind="click: update">Reset location</button>		
+					<!-- button for reloading or loading new location -->
+					<button id="submit" class='btn btn-secondary' data-bind="click: update">Change location</button>		
 				</div>
 			</div>
 
 			<div class="row">
-				<!-- The area to display results -->
+				<!-- The area to display results ie venues from foursqaure -->
 				<div class="col-sm-4 sidebar">
+					<!-- bootstrap css works better with tables than unordered lists -->
 					<table data-bind="foreach:filteredResults" class="table table-striped">
 						<tr>
 							<td class="listItem" data-bind="text: name,  click: show, $parent.setFilter(name) "></td>
@@ -49,14 +55,17 @@
 			</div>
 
 		</div>
-		<!-- load map using google maps api -->
 	</body>
+	<!-- initial dependencies -->
 	<script src="js/jquery-1.11.2.min.js"></script>
-  <script src="js/knockout-3.3.0.js"></script>
-  <!-- for autocomplete -->
-  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-
-  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCgjs9IH-A7moEOPrJ7TZs2av44X69slfg"></script>
-  <script src="js/app.js"></script>
-  <script src="js/map.js"></script>
+	<script src="js/knockout-3.3.0.js"></script>
+	<!-- for autocomplete -->
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	<!-- load google maps -->
+	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCgjs9IH-A7moEOPrJ7TZs2av44X69slfg"></script>
+	<!-- my apps -->
+	<script src="js/utils.js"></script>
+	<script src="js/apis.js"></script>
+	<script src="js/app.js"></script>
+	<script src="js/map.js"></script>
 </html>

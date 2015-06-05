@@ -1,54 +1,4 @@
-   // load streetview
-var getStreetViewImage = function (obj) {
-    var address = obj.location.lat+', '+obj.location.lng;
-    var params="size=200x100&location="+address;
-    var streetViewUrl = "http://maps.googleapis.com/maps/api/streetview?"+params;
-    return '<img class="bgimg" src="'+streetViewUrl+'">';
-}
-
-
-//wikipedia json-p requests
-var wikiAjaxCall = function (obj) {
-    var wikiURL = 'http://en.wikipedia.org/w/api.php?action=opensearch&search='+obj.name+'&format=json&callback=wikiCallback';
-    var wikiEntries = "";
-    var wikiRequestTimeout= setTimeout(function() {
-        wikiList='failed to get wikipedia links';
-    }, 8000);
-    $.ajax( {
-        url: wikiURL,
-        dataType:'jsonp',
-        success: function( response ) {
-            var articles = response[1];
-            wikiEntries+="<ul>";
-
-            for (var i = 0; i < articles.length; i++) {
-                var article = articles[i];
-                var url = 'http://en.wikipedia.org/wiki/'+article;
-                wikiEntries+='<li><a href="'+url+'">'+ article+'</a></li>';
-                // have to do this because of callback
-                obj.infowindow.content+=wikiEntries+'</u>';
-            };
-            clearTimeout(wikiRequestTimeout);
-            },
-    } );
-    return wikiEntries;
-}
-
-// custom utils function
-var stringStartsWith = function (string, startsWith) {          
-    string = string || "";
-    if (startsWith.length > string.length)
-        return false;
-    return string.substring(0, startsWith.length) === startsWith;
-};
-
-var stringContains = function (string, phrase) {
-    var string = string || "";
-    //returns true if phrase is contained in string
-    return (string.indexOf(phrase)>-1)
-}
-
-// global map variable to be moved soon
+// global map variable using google maps api
 var mapOptions = {
   center: { lat: -34.397, lng: 150.644},
   zoom: 14
@@ -56,8 +6,7 @@ var mapOptions = {
 var map = new google.maps.Map(document.getElementById('map-canvas'),
     mapOptions);
 
-
-
+// view model to apply bindings
 var viewModel = function () {
     var self=this;
     self.filterText = ko.observable("");
@@ -65,7 +14,6 @@ var viewModel = function () {
     self.autocompleteAllowed=ko.observable(false);
     //set text depending on value of allowed autocomplete
     self.acToggleDisplay = ko.computed(function() {
-
         return (self.autocompleteAllowed()) ?
         ko.observable("AutoComplete Enabled") : ko.observable("AutoComplete Disabled");
     });
@@ -83,87 +31,73 @@ var viewModel = function () {
     //flag for autocomplete
     self.toggleAutoComplete= function() {
         
-
         if (!self.autocompleteAllowed()) {
             self.autocompleteAllowed(true);
             $("#filter").autocomplete({ source: self.listNames() });
 
-            // because of a bug with chrome, 2 input fields must be created 
+            // because of a bug with chrome, 2 input fields must be created simulating autoComplete enable and disable
             $("#filter").show();
             // filter without autoCompletes
-            $("#firstFilter").hide();
+            $("#acDisabledFilter").hide();
         } else {
             self.autocompleteAllowed(false);
             $("#filter").attr('autocomplete','off');
             $("#filter").hide();
 
             // filter without autoComplete
-            $("#firstFilter").show();
+            $("#acDisabledFilter").show();
         }
         // hides annoying message
         $('.ui-helper-hidden-accessible').hide();
     };
     
-
-
     self.filteredResults=ko.computed(function () {
+        // string filter to filter our results by
         var filter = self.filterText().toLowerCase();
-        // remove whitespace
-        //filter = filter.trim();
+ 
         if (!filter) {
             // set markers for everything in listview
             self.listView().forEach(function(item) {
                 item.marker.setMap(map);
             });
+            // return all results if filter doesn't exist
             return self.listView();
         } else {
             var filteredList = ko.utils.arrayFilter(self.listView(), function (item) {
-                //return stringStartsWith(item.name.toLowerCase(), filter)
-
+                // we could use string starts with to only show items which start with the items the user enters,
+                // but the below example is a lazy search approach to return more results
                 if (stringContains(item.name.toLowerCase(),filter)) {
-                    // if item shows up
-
-                    //check marker then add
+                    // if item shows up check marker then set map to marker
                     if (item.marker) {
                         item.marker.setMap(map);
                     }
                     // return so it can be displayed
                     return true;
                 }
+                // else this will remove markers from the map if not in filter
                 else {item.marker.setMap(null); return false;}
             });
-            console.log(filteredList);
             return filteredList
         }
     }, self);
 
     self.update=function() {
         //FourSqaure API call
-        var sec = self.itemSearch();
-        var query = self.itemSearch();
-
+        var item = self.itemSearch();
         var loc = self.location();
-        console.log(loc,sec);
-        // Foursquare API
-        var fsURL = 'https://api.foursquare.com/v2/venues/search?near='+loc+'&section='+query+'&oauth_token=NOFWGL5PTP4HRY3W1IODQGUKIAG1GA5BV2AOBVGGLJGV0HF4&v=20150318';
-
-
+        var fsURL = 'https://api.foursquare.com/v2/venues/search?near='+loc+'&section='+item+'&oauth_token=NOFWGL5PTP4HRY3W1IODQGUKIAG1GA5BV2AOBVGGLJGV0HF4&v=20150318';
 
         //ajax call for the venues
         $.ajax({
             url: fsURL,
             dataType: "json",
             success: function(response){
-                console.log(response);
-                //var venue = response[1];
                 console.log(response["response"]);
                 venues = response["response"]["venues"].slice(1,-1);
 
-                // here we associate a map marker with each venue and append it                
-
+                // here we associate a map marker with each venue and append it to google maps                
                 venues.forEach(function (obj) {
                     // content for info window
-                    // console.log(obj);
                     var phone = (typeof obj.contact.formattedPhone === 'undefined') ? 'No Contact Information' : obj.contact.formattedPhone;
                     var fbook = (typeof obj.contact.facebookName === 'undefined') ? 'None' : obj.contact.facebookName;
                     var users = (typeof obj.stats.usersCount === 'undefined') ? 'No User Information' : obj.stats.usersCount;
@@ -175,7 +109,7 @@ var viewModel = function () {
                     obj.img = getStreetViewImage(obj);
 
                     var contentString =
-                      '<h1 id="firstHeading" class="firstHeading">'+obj.name+'</h1>'+
+                      '<h2 id="firstHeading" class="firstHeading">'+obj.name+'</h2>'+
                       '<div id="bodyContent">'+
                       obj.img+
                       '<p>'+here+'</p>'+
@@ -186,10 +120,9 @@ var viewModel = function () {
                       wikiList+
                       '</div>';
 
-
                     var latLang = new google.maps.LatLng(obj.location.lat,obj.location.lng);
                     var infowindow = new google.maps.InfoWindow({
-                        content: contentString, //add something later,
+                        content: contentString, //add content later, including wikipedia entries and streetview
                         size: new google.maps.Size(150, 50)
                     });
                     var newMarker = new google.maps.Marker({
@@ -199,7 +132,6 @@ var viewModel = function () {
                     });
                     obj.marker = newMarker;
                     obj.infowindow = infowindow;
-
 
                     //shows the marker
                     obj.show = function () {
@@ -211,15 +143,16 @@ var viewModel = function () {
                       if (obj.marker.getAnimation() != null) {
                         obj.marker.setAnimation(null);
                       } else {
-                        // set all other animations to null
+                        // set all other animations to null so only one is bouncing and showing info
                         venues.forEach(function (obj) {
                             obj.marker.setAnimation(null);
                             obj.infowindow.close();
                         });
+                        // uses the stored info window to associate marker with info
                         obj.infowindow.open(map, obj.marker);
                         obj.marker.setAnimation(google.maps.Animation.BOUNCE);
                       }
-                      // make sure it doesn't bounce forever
+                      // OPTIONAL: make sure it doesn't bounce forever
                       // setTimeout(function(){ obj.marker.setAnimation(null); }, 1500);
                     }
 
@@ -239,32 +172,10 @@ var viewModel = function () {
 
             }
         });
-// second ajax call for info
-
-
+// TODO: second ajax call for Yelp info
     };
 };
-//places in the area
 
-
-// MediaWikiAPI for Wikipedia
-//articles on area via wikipedia or interesting facts?
-
-// Google Maps Street View Service
-// Google Maps
 vm = new viewModel()
 ko.applyBindings(vm);
 vm.update();
-
-// hide this unneeded feedback
-
-
-//XWrite code required to add map markers identifying a number of locations your are interested in within this neighborhood.
-//XImplement the search bar functionality to search and filter your map markers. There should be a filtering function on markers that already show up. Simply providing a search function through a third-party API is not enough.
-//XImplement a list view of the identified locations.
-//Add additional functionality using third-party APIs when a map marker, search result, or list view entry is clicked (ex. Yelp reviews, Wikipedia, StreetView/Flickr images, etc). If you need a refresher on making AJAX requests to third-party servers, check out our Intro to AJAX course.
-
-// jquery things
-
-
-
