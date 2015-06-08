@@ -1,36 +1,34 @@
 // global map variable using google maps api
 var mapOptions = {
-  center: { lat: -34.397, lng: 150.644},
-  zoom: 14
+    center: { lat: -34.397, lng: 150.644},
+    zoom: 14
 };
 var map = new google.maps.Map(document.getElementById('map-canvas'),
     mapOptions);
 
 // view model to apply bindings
 var viewModel = function () {
-    var self=this;
+    var self = this;
     self.filterText = ko.observable("");
     self.listNames = ko.observableArray([]);
-    self.autocompleteAllowed=ko.observable(false);
+    self.autocompleteAllowed = ko.observable(false);
     //set text depending on value of allowed autocomplete
     self.acToggleDisplay = ko.computed(function() {
-        return (self.autocompleteAllowed()) ?
-        ko.observable("AutoComplete Enabled") : ko.observable("AutoComplete Disabled");
+        return (self.autocompleteAllowed()) ? ko.observable("AutoComplete Enabled") : ko.observable("AutoComplete Disabled");
     });
 
-	self.location=ko.observable("4940 W Rosebay Dr, Tucson, AZ");
-    self.itemSearch=ko.observable("drinks");
-    self.searchTerm=ko.observable("Burger");
-    self.listView=ko.observableArray([]);
+    self.location = ko.observable("4940 W Rosebay Dr, Tucson, AZ");
+    self.itemSearch = ko.observable("drinks");
+    self.searchTerm = ko.observable("Burger");
+    self.listView = ko.observableArray([]);
 
     //assigns class based on css
-    self.acButton=ko.pureComputed(function() {
+    self.acButton = ko.pureComputed(function() {
         return self.autocompleteAllowed() ? "btn-default" : "btn-disabled";
     });
 
     //flag for autocomplete
-    self.toggleAutoComplete= function() {
-        
+    self.toggleAutoComplete = function() {
         if (!self.autocompleteAllowed()) {
             self.autocompleteAllowed(true);
             $("#filter").autocomplete({ source: self.listNames() });
@@ -40,7 +38,7 @@ var viewModel = function () {
             $("#acDisabledFilter").hide();
         } else {
             self.autocompleteAllowed(false);
-            $("#filter").attr('autocomplete','off');
+            $("#filter").attr('autocomplete', 'off');
             $("#filter").hide();
 
             // filter without autoComplete
@@ -49,11 +47,9 @@ var viewModel = function () {
         // hides annoying message
         $('.ui-helper-hidden-accessible').hide();
     };
-    
-    self.filteredResults=ko.computed(function () {
+    self.filteredResults = ko.computed(function () {
         // string filter to filter our results by
         var filter = self.filterText().toLowerCase();
- 
         if (!filter) {
             // set markers for everything in listview
             self.listView().forEach(function(item) {
@@ -61,11 +57,12 @@ var viewModel = function () {
             });
             // return all results if filter doesn't exist
             return self.listView();
-        } else {
+        }
+        else {
             var filteredList = ko.utils.arrayFilter(self.listView(), function (item) {
                 // we could use string starts with to only show items which start with the items the user enters,
                 // but the below example is a lazy search approach to return more results
-                if (stringContains(item.name.toLowerCase(),filter)) {
+                if (stringContains(item.name.toLowerCase(), filter)) {
                     // if item shows up check marker then set map to marker
                     if (item.marker) {
                         item.marker.setMap(map);
@@ -74,25 +71,22 @@ var viewModel = function () {
                     return true;
                 }
                 // else this will remove markers from the map if not in filter
-                else {item.marker.setMap(null); return false;}
+                else { item.marker.setMap(null); return false };
             });
-            return filteredList
-        }
+            return filteredList;
+        };
     }, self);
-
-    self.update=function() {
+    self.update = function() {
         //FourSqaure API call
-        var item = self.itemSearch();
-        var loc = self.location();
-        var fsURL = 'https://api.foursquare.com/v2/venues/search?near='+loc+'&section='+item+'&oauth_token=NOFWGL5PTP4HRY3W1IODQGUKIAG1GA5BV2AOBVGGLJGV0HF4&v=20150318';
+        var fsURL = 'https://api.foursquare.com/v2/venues/search?near=' + self.location()+'&section=' + self.itemSearch() + '&oauth_token=NOFWGL5PTP4HRY3W1IODQGUKIAG1GA5BV2AOBVGGLJGV0HF4&v=20150318';
 
         //ajax call for the venues
         $.ajax({
             url: fsURL,
             dataType: "json",
-            success: function(response){
-                console.log(response["response"]);
-                venues = response["response"]["venues"].slice(1,-1);
+            success: function(response) {
+                console.log(response.response);
+                var venues = response.response.venues.slice(1, -1);
 
                 // here we associate a map marker with each venue and append it to google maps                
                 venues.forEach(function (obj) {
@@ -108,15 +102,15 @@ var viewModel = function () {
                     obj.img = getStreetViewImage(obj);
 
                     var contentString =
-                      '<h2 id="firstHeading" class="firstHeading">'+obj.name+'</h2>'+
-                      '<div id="bodyContent">'+
-                      obj.img+
-                      '<p>'+here+'</p>'+
-                      '<p><em>'+phone+'</em></p>'+
-                      '<p>Facebook name: '+fbook+'</p>'+
-                      '<p>'+webLink+'</p>'+
-                      '<p>Number of Users: <strong>'+users+'</strong></p>'+
-                      wikiList+
+                      '<h2 id="firstHeading" class="firstHeading">' + obj.name + '</h2>' +
+                      '<div id="bodyContent">' +
+                      obj.img +
+                      '<p>' + here + '</p>' +
+                      '<p><em>' + phone + '</em></p>' +
+                      '<p>Facebook name: ' + fbook + '</p>' +
+                      '<p>' + webLink + '</p>' +
+                      '<p>Number of Users: <strong>' + users + '</strong></p>' +
+                      wikiList +
                       '</div>';
 
                     var latLang = new google.maps.LatLng(obj.location.lat,obj.location.lng);

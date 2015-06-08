@@ -1,11 +1,9 @@
 // apis used in app.js
-
 // load streetview
 var getStreetViewImage = function (obj) {
-    var address = obj.location.lat+', '+obj.location.lng;
-    var params="size=200x100&location="+address;
-    var streetViewUrl = "http://maps.googleapis.com/maps/api/streetview?"+params;
-    return '<img class="bgimg" src="'+streetViewUrl+'">';
+    var params = 'size=200x100&location=' + obj.location.lat + ', ' + obj.location.lng;
+    var streetViewUrl = 'http://maps.googleapis.com/maps/api/streetview?' + params;
+    return '<img class="bgimg" src="' + streetViewUrl + '">';
 }
 
 //get wikipedia articles related to name of object

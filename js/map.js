@@ -14,7 +14,6 @@ function update() {
         if (status != google.maps.GeocoderStatus.ZERO_RESULTS) {
           map.setCenter(results[0].geometry.location);
 
-
           var infowindow = new google.maps.InfoWindow({
             content: '<b>' + address + '</b>',
             size: new google.maps.Size(150, 50)
