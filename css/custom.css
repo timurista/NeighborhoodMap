@@ -1,7 +1,4 @@
-body, html, #map_canvas {
-  height: 100%;
-  width: 100%;
-}
+html, body, #map-canvas { height: 100%; margin: 0; padding: 0;}
 
 .container {
     padding: 10px;
@@ -9,15 +6,22 @@ body, html, #map_canvas {
 
 /* google api suggests using id */
 .google-map {
-    margin: 2px;
+    margin: 0px;
     padding: 2px;
-    height: 500px;
+    height: 100%;
     width: 95%;
+    min-height: 500px;
     position: absolute;
 }
-
+table {
+    overflow:auto;
+}
 ul {
-    overflow-y: scroll;
+    overflow-y: auto;
+}
+
+.search-info {
+    margin: 5px 5px;
 }
 
 /* handling button */
@@ -28,7 +32,7 @@ ul {
 }
 .sidebar {
     overflow: auto;
-    height: 500px;
+    max-height: 500px;
 }
 
 /* handling the autocomplete UI */
@@ -60,24 +64,5 @@ ul {
     background-clip: padding-box;
     *border-right-width: 2px;
     *border-bottom-width: 2px;
-
-    .ui-menu-item > a.ui-corner-all {
-        display: block;
-        padding: 3px 15px;
-        clear: both;
-        font-weight: normal;
-        line-height: 18px;
-        color: #555;
-        white-space: nowrap;
- 
-        &.ui-state-hover, &.ui-state-active {
-            color: #fff;
-            text-decoration: none;
-            background-color: #0088cc;
-            border-radius: 0px;
-            -webkit-border-radius: 0px;
-            -moz-border-radius: 0px;
-            background-image: none;
-        }
     }
 }

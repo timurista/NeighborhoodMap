@@ -1,7 +1,8 @@
 // global map variable using google maps api
+var $map = $('#map-canvas');
 var mapOptions = {
     center: { lat: -34.397, lng: 150.644},
-    zoom: 14
+    // zoom: 14
 };
 var map = new google.maps.Map(document.getElementById('map-canvas'),
     mapOptions);
@@ -9,6 +10,24 @@ var map = new google.maps.Map(document.getElementById('map-canvas'),
 // view model to apply bindings
 var viewModel = function () {
     var self = this;
+    self.clearMarkers = function() {
+        self.listView().forEach(function(item) {
+            item.marker.setMap(null);
+        });
+    };
+    // fix bounds of goolge map
+    self.fitAllMarkers = function(listV) {
+        Offline.check();
+        var bounds = new google.maps.LatLngBounds();
+        var listV = listV;
+        if (listV.length>0) {
+            for(i=0;i<listV.length;i++) {
+                bounds.extend(listV[i].marker.getPosition());
+            }
+            map.fitBounds(bounds);
+        };            
+    };
+
     self.filterText = ko.observable("");
     self.listNames = ko.observableArray([]);
     self.autocompleteAllowed = ko.observable(false);
@@ -18,6 +37,8 @@ var viewModel = function () {
     });
 
     self.location = ko.observable("4940 W Rosebay Dr, Tucson, AZ");
+    //apply map bindings
+
     self.itemSearch = ko.observable("drinks");
     self.searchTerm = ko.observable("Burger");
     self.listView = ko.observableArray([]);
@@ -48,6 +69,9 @@ var viewModel = function () {
         $('.ui-helper-hidden-accessible').hide();
     };
     self.filteredResults = ko.computed(function () {
+        // set allMarkers to null
+        self.clearMarkers();
+
         // string filter to filter our results by
         var filter = self.filterText().toLowerCase();
         if (!filter) {
@@ -56,6 +80,7 @@ var viewModel = function () {
                 item.marker.setMap(map);
             });
             // return all results if filter doesn't exist
+            self.fitAllMarkers(self.listView());
             return self.listView();
         }
         else {
@@ -71,20 +96,29 @@ var viewModel = function () {
                     return true;
                 }
                 // else this will remove markers from the map if not in filter
-                else { item.marker.setMap(null); return false };
+                else { return false };
             });
+
+            self.fitAllMarkers(filteredList);
             return filteredList;
         };
     }, self);
     self.update = function() {
         //FourSqaure API call
+        self.clearMarkers();
         var fsURL = 'https://api.foursquare.com/v2/venues/search?near=' + self.location()+'&section=' + self.itemSearch() + '&oauth_token=NOFWGL5PTP4HRY3W1IODQGUKIAG1GA5BV2AOBVGGLJGV0HF4&v=20150318';
 
         //ajax call for the venues
         $.ajax({
             url: fsURL,
             dataType: "json",
+            error: function (argument) {
+                Offline.check();
+            },
             success: function(response) {
+                self.listView([]);
+                updateLocation(self.location());
+                map.setOptions({zoom: 14});
                 console.log(response.response);
                 var venues = response.response.venues.slice(1, -1);
 
@@ -152,6 +186,7 @@ var viewModel = function () {
                     //add dom listener
                     google.maps.event.addListener(obj.marker, 'click', function() {
                         map.setCenter(map.setCenter(obj.marker.getPosition()));
+                        map.set
                         
                         // do some animation
                         obj.toggleBounce();
@@ -163,10 +198,14 @@ var viewModel = function () {
                 });
                 self.listView(venues);
 
+
             }
         });
+            self.fitAllMarkers(self.listView());
 // TODO: second ajax call for Yelp info
     };
+
+    
 };
 
 vm = new viewModel()

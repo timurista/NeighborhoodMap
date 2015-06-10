@@ -1,9 +1,10 @@
 // updates/loads the map based on address by utilizing geocoding
-function update() {
+var updateLocation = function(address) {
 	//get geocoder for converting address to lat/lang
 	var geocoder = new google.maps.Geocoder();
 	//update using jquery not knockout databinding
-	var address = $('#location').val();
+	var address = address;
+  // console.log(address)
   
   //geocoder converts address to geocode
   if (geocoder) {
@@ -25,6 +26,15 @@ function update() {
             title: address
           });
 
+          google.maps.event.addListener(marker, 'click', function() {
+              infowindow.open(map, marker);
+          });
+
+          // deal with the bounds setting
+          // var bounds = new google.maps.LatLngBounds();
+          // map.fitBounds(bounds);
+          // map.setZoom(16); 
+
         } else {
           alert("No results found");
         }
@@ -36,8 +46,8 @@ function update() {
 }
 
 // on load run the initialization
-google.maps.event.addDomListener(window, 'load', update);
-google.maps.event.addDomListener(document.getElementById('submit'), 'click', function () {
-  update();
-});
+// google.maps.event.addDomListener(window, 'load', updateLocation);
+// google.maps.event.addDomListener(document.getElementById('submit'), 'click', function () {
+//   update();
+// });
 

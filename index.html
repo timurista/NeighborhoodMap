@@ -4,19 +4,21 @@
 		<title>Neighborhood Map</title>
 
 		<!-- for dealing with scaling issues using google maps -->
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"> -->
 		<!-- css -->
 		<link rel="stylesheet" href="css/bootstrap.min.css">
-		<!-- <link rel="stylesheet" href="css/offline-language-english.css"> -->
-		<!-- <link rel="stylesheet" href="css/offline-theme-dark.css"> -->
+		<link rel="stylesheet" href="css/offline-language-english.css">
+		<link rel="stylesheet" href="css/offline-theme-dark.css">
 		<link rel="stylesheet" href="css/custom.css">
+		<link rel="stylesheet" media="screen and (min-width: 2000px)" href="css/responsive.css">
 		<!-- TODO:css for media queries -->
 	</head>
 	<body>
-		<div class="container">
-			<div class="row">
+		<div class="container-fluid">
+			<div class="row search-info">
 				<!-- The search bar user input to filter results -->
-				<div class="col-sm-4">
+				<!-- 1 col for really small devices, 4 for bigger ones -->
+				<div class="col-md-4">
 					<label for="filter">Search</label>
 					<!-- This includes auto complete -->
 					<button data-bind="click: toggleAutoComplete, text: acToggleDisplay(), css: acButton">{{acToggleDisplay}}</button>
@@ -25,17 +27,17 @@
 					<input type="text" id="acDisabledFilter" class="form-control" data-bind="value: filterText, valueUpdate: ['blur']" placeholder="enter search term" style="display:none">
 				</div>
 
-				<div id="search" class="col-sm-4">
+				<div id="search" class="col-sm-4 col-md-4">
 					<!-- user can change the search location and gets a list of new places -->
 					<label for="location">This location is</label>
 					<input type="text" id="location" class="form-control" data-bind="value: location">
 				</div>
-				<div class="col-sm-2">
+				<div class="col-sm-4 col-md-2">
 					<!-- User can search for specific kinds of items here, the api request is altered accordingly -->
 					<label for="itemSearch">Look for</label>
 					<input type="text" id="itemSearch" data-bind="value:itemSearch" class="form-control" >
 				</div>
-				<div class="col-sm-2">	
+				<div class="col-sm-2 col-md-2">	
 					<!-- button for reloading or loading new location -->
 					<button id="submit" class='btn btn-secondary' data-bind="click: update">Change location</button>		
 				</div>
@@ -43,7 +45,7 @@
 
 			<div class="row">
 				<!-- The area to display results ie venues from foursqaure -->
-				<div class="col-sm-4 sidebar">
+				<div class="sidebar col-sm-2 col-md-3">
 					<!-- bootstrap css works better with tables than unordered lists -->
 					<table data-bind="foreach:filteredResults" class="table table-striped">
 						<tr>
@@ -52,8 +54,8 @@
 					</table>
 				</div>
 			    <!-- Display map -->
-				<div class="col-sm-8 google-map" >
-				    <div id="map-canvas"></div>
+				<div class="col-sm-10 col-md-9" >
+				    <div id="map-canvas" class="google-map"></div>
 				</div>
 			
 
@@ -65,6 +67,7 @@
 	<!-- initial dependencies -->
 	<script src="js/jquery-1.11.2.min.js"></script>
 	<script src="js/knockout-3.3.0.js"></script>
+	<script src="js/offline.min.js"></script>
 	<!-- for autocomplete -->
 	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 	<!-- load google maps -->
@@ -72,8 +75,8 @@
 	<!-- my apps -->
 	<script src="js/utils.js"></script>
 	<script src="js/apis.js"></script>
-	<script src="js/app.js"></script>
 	<script src="js/map.js"></script>
+	<script src="js/app.js"></script>
 	<!-- deal with offline issues <script src="js/offline.min.js"></script> -->
 	
 
