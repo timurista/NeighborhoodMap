@@ -15,9 +15,26 @@ var map = new google.maps.Map(document.getElementById('map-canvas'),
 // view model to apply bindings
 var viewModel = function () {
     var self = this;
+
+    self.selectedVenue = ko.observable({
+        name:'none',
+        contact:{},
+        url:'#',
+        stats:{usersCount:0},
+        wikiList:['none'],
+        img:'#',
+    });
+
+    self.iconBase = 'https://maps.google.com/mapfiles/kml/pushpin/';
+    self.resetIcons = function() {
+        self.listView().forEach(function(item) {          
+            item.marker.icon = self.iconBase + 'red-pushpin.png';
+        });
+    };
+
     self.clearMarkers = function() {
         self.listView().forEach(function(item) {
-            item.marker.setMap(null);
+            item.marker.setMap(null);            
         });
     };
     // fix bounds of goolge map
@@ -134,31 +151,28 @@ var viewModel = function () {
                     var webLink = (typeof obj.url === 'undefined') ? 'No Website' : '<a href="'+obj.url+'">Website</a>';
                     var here = obj.hereNow.summary;
 
-                    //sets wikipedia info
-                    var wikiList = wikiAjaxCall(obj);
+                    //sets wikipedia info to be injected in callback
+                    obj.wikiList = ko.observableArray();
+                    wikiAjaxCall(obj);
+                    // var wikiList = wikiAjaxCall(obj);
                     obj.img = getStreetViewImage(obj);
 
-                    var contentString =
-                      '<div class="infobox"><h2 id="firstHeading" class="firstHeading">' + obj.name + '</h2>' +
-                      '<div id="bodyContent">' +
-                      obj.img +
-                      '<p>' + here + '</p>' +
-                      '<p><em>' + phone + '</em></p>' +
-                      '<p>Facebook name: ' + fbook + '</p>' +
-                      '<p>' + webLink + '</p>' +
-                      '<p>Number of Users: <strong>' + users + '</strong></p>' +
-                      wikiList +
-                      '</div>';
+                    var contentString ='<p>' + obj.name + '</p>';
 
                     var latLang = new google.maps.LatLng(obj.location.lat,obj.location.lng);
                     var infowindow = new google.maps.InfoWindow({
                         content: contentString, //add content later, including wikipedia entries and streetview
-                        size: new google.maps.Size(100, 50)
+                        size: new google.maps.Size(100, 50),
+                        maxWidth: 200,
+                        maxHeight: 100
                     });
+
+                    var iconBase = 'https://maps.google.com/mapfiles/kml/pushpin/';
                     var newMarker = new google.maps.Marker({
                       position: obj.location,
                       map: map,
-                      title: obj.name //name of place 
+                      title: obj.name, //name of place 
+                      icon: iconBase + 'red-pushpin.png'
                     });
                     obj.marker = newMarker;
                     obj.infowindow = infowindow;
@@ -167,6 +181,15 @@ var viewModel = function () {
                     obj.show = function () {
                         google.maps.event.trigger(obj.marker, 'click');
                     };
+
+                    // changes color
+                    obj.toggleColor = function () {
+                        var red = 'red-pushpin.png';
+                        var ylw = 'ylw-pushpin.png';
+                        obj.marker.icon = (obj.marker.icon !== self.iconBase+ylw) 
+                            ? self.iconBase + ylw : self.iconBase + red;
+                        console.log(obj.marker.icon);
+                    }
 
                     // add animation options
                     obj.toggleBounce = function() {
@@ -181,6 +204,7 @@ var viewModel = function () {
                         // uses the stored info window to associate marker with info
                         obj.infowindow.open(map, obj.marker);
                         obj.marker.setAnimation(google.maps.Animation.BOUNCE);
+
                       }
                       // OPTIONAL: make sure it doesn't bounce forever
                       // setTimeout(function(){ obj.marker.setAnimation(null); }, 1500);
@@ -188,9 +212,14 @@ var viewModel = function () {
 
                     //add dom listener
                     google.maps.event.addListener(obj.marker, 'click', function() {
-                        map.setCenter(map.setCenter(obj.marker.getPosition()));
+                        //reset icons
+                        self.resetIcons()
+                        // change icon
+                        obj.toggleColor();
                         // do some animation
                         obj.toggleBounce();
+                        self.selectedVenue(obj);
+                        map.setCenter(map.setCenter(obj.marker.getPosition()));
                     });
 
                     // push names into autcomplete list

@@ -10,3 +10,36 @@ var stringContains = function (oldString, phrase) {
     //returns true if phrase is contained in string
     return (string.indexOf(phrase)>-1);
 };
+
+//jquery done here
+$('.minimize').click(function() {
+	// console.log('clicked',$(this).siblings());
+	$(this).siblings().slideToggle('slow');
+	$(this).find('span').toggleClass('glyphicon-minus');
+	$(this).find('span').toggleClass('glyphicon-plus');
+});
+
+//collapsible management
+$('.collapsible').collapsible({
+    defaultOpen: 'section1',
+    cookieName: 'nav',
+    speed: 'fast',
+    animateOpen: function (elem, opts) { //replace the standard slideUp with custom function
+        elem.next().slideFadeToggle(opts.speed);
+        console.log(elem);
+    },
+    animateClose: function (elem, opts) { //replace the standard slideDown with custom function
+        elem.next().slideFadeToggle(opts.speed);
+    },
+    loadOpen: function (elem) { //replace the standard open state with custom function
+        elem.next().show();
+    },
+    loadClose: function (elem, opts) { //replace the close state with custom function
+        elem.next().hide();
+    }
+});
+
+// hide missing images
+$("img").error(function(){
+        $(this).hide();
+});

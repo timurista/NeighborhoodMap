@@ -18,6 +18,7 @@
 	<body>
 		<div class="container-fluid">
 			<div class="row search-info">
+				<div class="minimize"><span class="glyphicon glyphicon-minus" aria-hidden="true"></div>
 				<!-- The search bar user input to filter results -->
 				<!-- 1 col for really small devices, 4 for bigger ones -->
 				<div class="col-md-4">
@@ -45,11 +46,44 @@
 				</div>
 			</div>
 
+			<!-- dispalys selected information -->
+
+			<div class="row displaySelected" >
+				<div class="minimize"><span class="glyphicon glyphicon-minus" aria-hidden="true"></div>
+				<div data-bind="with: selectedVenue" id="display" class="collapsible">
+					<div class="col-sm-1 col-md-2">
+						<label for="name">Selected: </label>
+						<div data-bind="text: name"></div>
+					</div>
+					<div class="col-sm-1 col-md-2">
+						<label for="facebook">Facebook: </label> 
+						<div data-bind="text: contact.facebookName"></div>
+					</div>
+					<div class="col-sm-1 col-md-2"> 
+						<label for="phone">Phone: </label> 
+						<div data-bind="text: contact.formattedPhone"></div>
+					</div>
+					<div class="col-sm-1 col-md-2">
+						<label for="phone">Users Today:</label>  
+						<div data-bind="text: stats.usersCount"></div>
+					</div>
+					<div class="col-sm-2 col-md-2"> 
+						<img data-bind="attr: {src: img}"/>
+					</div>
+
+					<!-- <div class="col-md-2" data-bind="if: url">
+						Website <a data-bind="attr: { href: url }"></a>
+					</div> -->
+				</div>
+			</div>
+
 			<div class="row">
 				<!-- The area to display results ie venues from foursqaure -->
-				<div class="sidebar col-sm-2 col-md-3">
+				
+				<div class="sidebar col-sm-2 col-md-2 collapsible" >
 					<!-- bootstrap css works better with tables than unordered lists -->
-					<table data-bind="foreach:filteredResults" class="table table-striped">
+					<div class="header">Results</div>
+					<table data-bind="foreach:filteredResults" class="table table-striped " id="results">
 						<tr>
 							<td class="listItem" data-bind="text: name,  click: show, $parent.setFilter(name) "></td>
 						</tr>
@@ -59,15 +93,14 @@
 				<div class="col-sm-10 col-md-9" >
 				    <div id="map-canvas" class="google-map"></div>
 				</div>
-			
+			</div>
 
-			</div>
-			</div>
 
 		</div>
-	</body>
+
 	<!-- initial dependencies -->
 	<script src="js/jquery-1.11.2.min.js"></script>
+	<script src="js/jquery.collapsible.min.js"></script>
 	<script src="js/knockout-3.3.0.min.js"></script>
 	<script src="js/offline.min.js"></script>
 	<script src="js/toastr.min.js"></script>
@@ -80,7 +113,6 @@
 	<script src="js/apis.js"></script>
 	<script src="js/map.js"></script>
 	<script src="js/app.js"></script>
-	<!-- deal with offline issues <script src="js/offline.min.js"></script> -->
+</body>
 	
-
 </html>
