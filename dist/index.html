@@ -5,26 +5,27 @@
 
 		<!-- for dealing with scaling issues using google maps -->
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-		<!-- css -->
+		<!-- external css -->
 		<link rel="stylesheet" href="css/bootstrap.min.css">
 		<link rel="stylesheet" href="css/offline-language-english.min.css">
 		<link rel="stylesheet" href="css/offline-theme-dark.min.css">
+		<link rel="stylesheet" href="css/toastr.min.css">
+		<!-- user generated css -->
 		<link rel="stylesheet" href="css/custom.min.css">
 		<link rel="stylesheet" media="screen and (min-width: 2000px)" href="css/responsive.min.css">
-		<!-- TODO:css for media queries -->
+
 	</head>
 	<body>
 		<div class="container-fluid">
 			<div class="row search-info">
 				<!-- The search bar user input to filter results -->
-				<!-- 1 col for really small devices, 4 for bigger ones -->
 				<div class="col-md-4">
 					<label for="filter">Search</label>
 					<!-- This includes auto complete -->
 					<button data-bind="click: toggleAutoComplete, text: acToggleDisplay(), css: acButton">{{acToggleDisplay}}</button>
 					<input type="text" id="filter" class="form-control" data-bind="value: filterText, valueUpdate: ['blur']" placeholder="enter search term">
 					<!-- second input for filter is needed, initially display is none and does not use autocomplete -->
-					<input type="text" id="acDisabledFilter" class="form-control" data-bind="value: filterText, valueUpdate: ['blur']" placeholder="enter search term" style="display:none">
+					<input type="text" id="acDisabledFilter" class="form-control" data-bind="value: filterText, valueUpdate: ['blur']" placeholder="enter search term or phrase" style="display:none">
 				</div>
 
 				<div id="search" class="col-sm-4 col-md-4">
@@ -68,6 +69,7 @@
 	<script src="js/jquery-1.11.2.min.js"></script>
 	<script src="js/knockout-3.3.0.min.js"></script>
 	<script src="js/offline.min.js"></script>
+	<script src="js/toastr.min.js"></script>
 	<!-- for autocomplete -->
 	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 	<!-- load google maps -->
@@ -76,7 +78,6 @@
 	<script src="js/utils.min.js"></script>
 	<script src="js/apis.min.js"></script>
 	<script src="js/map.min.js"></script>
-	<script src="js/app.min.js"></script>
-	
+	<script src="js/app.min.js"></script>	
 
 </html>

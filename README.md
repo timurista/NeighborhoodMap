@@ -7,7 +7,7 @@ A map of the surrounding area of a specific location and this map loads a search
 
 - As it loads, you will see an input to filter search results, a location to search for, and a category or item to search for as well. This script uses foursqaure api to search for a list of results and return those to the user
 
-- By typing words into the search bar and pressing enter, you can filter for certain names of places that contain a certain phrase.
+- By typing words into the search bar and pressing enter, you can filter for certain names of places that contain a certain phrase. Note: this search bar uses "fuzzy searching" to give users more results including names of places with part of the search term inside it.
 
 - To change the location of the map, type in the Location input box and then click the "change location" button.
 

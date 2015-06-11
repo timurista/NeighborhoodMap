@@ -1,14 +1,13 @@
-// global map variable using google maps api
-// TODO figure out how to do custom bindings for this
-// http://www.codeproject.com/Articles/351298/KnockoutJS-and-Google-Maps-binding
+// TODO: figure out how to do custom bindings for map and ko, but I may use angular in future
 // http://knockoutjs.com/documentation/custom-bindings.html
 // http://knockoutjs.com/documentation/custom-bindings-controlling-descendant-bindings.html
 // https://github.com/hoonzis/KoExtensions
 // https://github.com/manuel-guilbault/knockout.google.maps
+
+// global map variable using google maps api
 var $map = $('#map-canvas');
 var mapOptions = {
     center: { lat: -34.397, lng: 150.644},
-    // zoom: 14
 };
 var map = new google.maps.Map(document.getElementById('map-canvas'),
     mapOptions);
@@ -103,7 +102,6 @@ var viewModel = function () {
                 // else this will remove markers from the map if not in filter
                 else { return false; }
             });
-
             self.fitAllMarkers(filteredList);
             return filteredList;
         }
@@ -112,13 +110,13 @@ var viewModel = function () {
         //FourSqaure API call
         self.clearMarkers();
         var fsURL = 'https://api.foursquare.com/v2/venues/search?near=' + self.location()+'&section=' + self.itemSearch() + '&oauth_token=NOFWGL5PTP4HRY3W1IODQGUKIAG1GA5BV2AOBVGGLJGV0HF4&v=20150318';
-
         //ajax call for the venues
         $.ajax({
             url: fsURL,
             dataType: "json",
             error: function (argument) {
                 Offline.check();
+                
             },
             success: function(response) {
                 self.listView([]);
@@ -141,7 +139,7 @@ var viewModel = function () {
                     obj.img = getStreetViewImage(obj);
 
                     var contentString =
-                      '<h2 id="firstHeading" class="firstHeading">' + obj.name + '</h2>' +
+                      '<div class="infobox"><h2 id="firstHeading" class="firstHeading">' + obj.name + '</h2>' +
                       '<div id="bodyContent">' +
                       obj.img +
                       '<p>' + here + '</p>' +
@@ -201,13 +199,13 @@ var viewModel = function () {
                 });
                 self.listView(venues);
             }
+        // check that if bad request, then user is shown information
+        }).fail(function($faildata) {
+            toastr.error("The place you entered cannot be found");
         });
         // I do this here to act as zoom for the retrieved information
         self.fitAllMarkers(self.listView());
-        // TODO: second ajax call for Yelp info
-    };
-
-    
+    };    
 };
 vm = new viewModel();
 ko.applyBindings(vm);
