@@ -3,8 +3,7 @@
 var getStreetViewImage = function (obj) {
     var params = 'size=200x100&location=' + obj.location.lat + ', ' + obj.location.lng;
     var streetViewUrl = 'http://maps.googleapis.com/maps/api/streetview?' + params;
-    return '<img class="bgimg" src="' + streetViewUrl + '">';
-};
+    return '<img class="bgimg" src="' + streetViewUrl + '">'; };
 
 //get wikipedia articles related to name of object
 var wikiAjaxCall = function (obj) {    
@@ -27,7 +26,7 @@ var wikiAjaxCall = function (obj) {
                 wikiEntries+='<li><a href="'+url+'">'+ article+'</a></li>';
                 // have to do this because of callback
                 obj.infowindow.content+=wikiEntries+'</u>';
-            };
+            }
             clearTimeout(wikiRequestTimeout);
             },
     } );

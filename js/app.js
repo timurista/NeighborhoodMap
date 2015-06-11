@@ -19,13 +19,12 @@ var viewModel = function () {
     self.fitAllMarkers = function(listV) {
         Offline.check();
         var bounds = new google.maps.LatLngBounds();
-        var listV = listV;
         if (listV.length>0) {
             for(i=0;i<listV.length;i++) {
                 bounds.extend(listV[i].marker.getPosition());
             }
             map.fitBounds(bounds);
-        };            
+        }            
     };
 
     self.filterText = ko.observable("");
@@ -96,12 +95,12 @@ var viewModel = function () {
                     return true;
                 }
                 // else this will remove markers from the map if not in filter
-                else { return false };
+                else { return false; }
             });
 
             self.fitAllMarkers(filteredList);
             return filteredList;
-        };
+        }
     }, self);
     self.update = function() {
         //FourSqaure API call
@@ -150,7 +149,7 @@ var viewModel = function () {
                     var latLang = new google.maps.LatLng(obj.location.lat,obj.location.lng);
                     var infowindow = new google.maps.InfoWindow({
                         content: contentString, //add content later, including wikipedia entries and streetview
-                        size: new google.maps.Size(150, 50)
+                        size: new google.maps.Size(100, 50)
                     });
                     var newMarker = new google.maps.Marker({
                       position: obj.location,
@@ -167,7 +166,7 @@ var viewModel = function () {
 
                     // add animation options
                     obj.toggleBounce = function() {
-                      if (obj.marker.getAnimation() != null) {
+                      if (obj.marker.getAnimation() !== null) {
                         obj.marker.setAnimation(null);
                       } else {
                         // set all other animations to null so only one is bouncing and showing info
@@ -181,13 +180,11 @@ var viewModel = function () {
                       }
                       // OPTIONAL: make sure it doesn't bounce forever
                       // setTimeout(function(){ obj.marker.setAnimation(null); }, 1500);
-                    }
+                    };
 
                     //add dom listener
                     google.maps.event.addListener(obj.marker, 'click', function() {
                         map.setCenter(map.setCenter(obj.marker.getPosition()));
-                        map.set
-                        
                         // do some animation
                         obj.toggleBounce();
                     });
@@ -197,18 +194,16 @@ var viewModel = function () {
 
                 });
                 self.listView(venues);
-
-
             }
         });
-            self.fitAllMarkers(self.listView());
-// TODO: second ajax call for Yelp info
+        // I do this here to act as zoom for the retrieved information
+        self.fitAllMarkers(self.listView());
+        // TODO: second ajax call for Yelp info
     };
 
     
 };
-
-vm = new viewModel()
+vm = new viewModel();
 ko.applyBindings(vm);
 vm.update();
 

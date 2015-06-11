@@ -1,9 +1,9 @@
 // updates/loads the map based on address by utilizing geocoding
-var updateLocation = function(address) {
+var updateLocation = function(loc) {
 	//get geocoder for converting address to lat/lang
 	var geocoder = new google.maps.Geocoder();
 	//update using jquery not knockout databinding
-	var address = address;
+	var address = loc;
   // console.log(address)
   
   //geocoder converts address to geocode
@@ -42,12 +42,5 @@ var updateLocation = function(address) {
         alert("Geocode was not successful for the following reason: " + status);
       }
     });
-  };
-}
-
-// on load run the initialization
-// google.maps.event.addDomListener(window, 'load', updateLocation);
-// google.maps.event.addDomListener(document.getElementById('submit'), 'click', function () {
-//   update();
-// });
-
+  }
+};
