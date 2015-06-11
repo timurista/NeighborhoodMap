@@ -7,6 +7,7 @@ var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var cssmin = require('gulp-cssmin');
 var rename = require('gulp-rename');
+var cdnify = 
 
 // Lint Task
 gulp.task('lint', function() {
@@ -30,6 +31,15 @@ gulp.task('cssmin', function () {
         .pipe(cssmin())
         .pipe(gulp.dest('dist/css'));
 });
+
+//cdnify
+// gulp.src [
+//    'dist/**/*.{css,html}'
+// ]
+// .pipe $.cdnify(
+//     base: "http://pathto/your/cdn/"
+//   )
+// .pipe(gulp.dest('dist/'))
 
 // Watch Files For Changes
 gulp.task('watch', function() {

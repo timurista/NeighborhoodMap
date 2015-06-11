@@ -1,4 +1,10 @@
 // global map variable using google maps api
+// TODO figure out how to do custom bindings for this
+// http://www.codeproject.com/Articles/351298/KnockoutJS-and-Google-Maps-binding
+// http://knockoutjs.com/documentation/custom-bindings.html
+// http://knockoutjs.com/documentation/custom-bindings-controlling-descendant-bindings.html
+// https://github.com/hoonzis/KoExtensions
+// https://github.com/manuel-guilbault/knockout.google.maps
 var $map = $('#map-canvas');
 var mapOptions = {
     center: { lat: -34.397, lng: 150.644},
@@ -28,7 +34,7 @@ var viewModel = function () {
     };
 
     self.filterText = ko.observable("");
-    self.listNames = ko.observableArray([]);
+    self.listNames = ko.observableArray();
     self.autocompleteAllowed = ko.observable(false);
     //set text depending on value of allowed autocomplete
     self.acToggleDisplay = ko.computed(function() {
