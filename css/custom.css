@@ -13,10 +13,10 @@ html, body, #map-canvas { height: 100%; margin: 0; padding: 0;}
     position: absolute;
 }
 
-.glyphicon {
+/*.glyphicon {
     font-size: 1.5em;
     float: right;
-}
+}*/
 
 /* custom infobox style */
 .displaySelected {

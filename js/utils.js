@@ -11,15 +11,7 @@ var stringContains = function (oldString, phrase) {
     return (string.indexOf(phrase)>-1);
 };
 
-//jquery done here
-$('.minimize').click(function() {
-	// console.log('clicked',$(this).siblings());
-	$(this).siblings().slideToggle('slow');
-	$(this).find('span').toggleClass('glyphicon-minus');
-	$(this).find('span').toggleClass('glyphicon-plus');
-});
-
-//collapsible management
+//jquery collapsible management
 $('.collapsible').collapsible({
     defaultOpen: 'section1',
     cookieName: 'nav',

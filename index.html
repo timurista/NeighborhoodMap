@@ -18,11 +18,13 @@
 	<body>
 		<div class="container-fluid">
 			<div class="row search-info">
-				<div class="minimize"><span class="glyphicon glyphicon-minus" aria-hidden="true"></div>
+				<!-- Collapsible bar -->
 				<!-- The search bar user input to filter results -->
 				<!-- 1 col for really small devices, 4 for bigger ones -->
-				<div class="col-md-4">
-					<label for="filter">Search</label>
+				<div class="col-md-4 " data-bind="click: showHide">
+					
+					<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+					<label for="filter" >Search</label>
 					<!-- This includes auto complete -->
 					<button data-bind="click: toggleAutoComplete, text: acToggleDisplay(), css: acButton">{{acToggleDisplay}}</button>
 					<input type="text" id="filter" class="form-control" data-bind="value: filterText, valueUpdate: ['blur']" placeholder="enter search term">
@@ -47,11 +49,11 @@
 			</div>
 
 			<!-- dispalys selected information -->
-
-			<div class="row displaySelected" >
-				<div class="minimize"><span class="glyphicon glyphicon-minus" aria-hidden="true"></div>
-				<div data-bind="with: selectedVenue" id="display" class="collapsible">
-					<div class="col-sm-1 col-md-2">
+			<div class="row displaySelected ">
+				<div data-bind="with: selectedVenue" id="display">
+					<div class="col-sm-1 col-md-2" data-bind="click: $parent.showHide" >
+						<!-- visual marker for collapsed info -->
+						<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
 						<label for="name">Selected: </label>
 						<div data-bind="text: name"></div>
 					</div>
@@ -70,12 +72,15 @@
 					<div class="col-sm-2 col-md-2"> 
 						<img data-bind="attr: {src: img}"/>
 					</div>
-
-					<!-- <div class="col-md-2" data-bind="if: url">
-						Website <a data-bind="attr: { href: url }"></a>
-					</div> -->
 				</div>
 			</div>
+
+
+						<!-- <div class="col-md-2" data-bind="if: url">
+							Website <a data-bind="attr: { href: url }"></a>
+						</div> -->
+				
+			<!-- </div> -->
 
 			<div class="row">
 				<!-- The area to display results ie venues from foursqaure -->

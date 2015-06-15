@@ -1,7 +1,7 @@
 // TODO: figure out how to do custom bindings for map and ko, but I may use angular in future
 // http://knockoutjs.com/documentation/custom-bindings.html
 // http://knockoutjs.com/documentation/custom-bindings-controlling-descendant-bindings.html
-// https://github.com/hoonzis/KoExtensions
+//h ttps://github.com/hoonzis/KoExtensions
 // https://github.com/manuel-guilbault/knockout.google.maps
 
 // global map variable using google maps api
@@ -24,6 +24,13 @@ var viewModel = function () {
         wikiList:['none'],
         img:'#',
     });
+
+    // toggles visiblity
+    self.showHide = function(viewModel, event) {
+        $(event.currentTarget).siblings().slideToggle();
+        $(event.currentTarget).find('.glyphicon').toggleClass('glyphicon-minus');
+        $(event.currentTarget).find('.glyphicon').toggleClass('glyphicon-plus');
+    }
 
     self.iconBase = 'https://maps.google.com/mapfiles/kml/pushpin/';
     self.resetIcons = function() {
@@ -188,7 +195,7 @@ var viewModel = function () {
                         var ylw = 'ylw-pushpin.png';
                         obj.marker.icon = (obj.marker.icon !== self.iconBase+ylw) 
                             ? self.iconBase + ylw : self.iconBase + red;
-                        console.log(obj.marker.icon);
+                        // console.log(obj.marker.icon);
                     }
 
                     // add animation options
