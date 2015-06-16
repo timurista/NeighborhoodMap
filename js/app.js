@@ -22,7 +22,10 @@ var viewModel = function () {
         url:'#',
         stats:{usersCount:0},
         wikiList:['none'],
-        img:'#',
+        image_url:'#',
+        rating:'',
+        rating_img_url_small:'',
+        snippet_text:'',
     });
 
     // toggles visiblity
@@ -63,12 +66,8 @@ var viewModel = function () {
     self.acToggleDisplay = ko.computed(function() {
         return (self.autocompleteAllowed()) ? ko.observable("AutoComplete Enabled") : ko.observable("AutoComplete Disabled");
     });
-
     self.location = ko.observable("4940 W Rosebay Dr, Tucson, AZ");
-    //apply map bindings
-
     self.itemSearch = ko.observable("drinks");
-    self.searchTerm = ko.observable("Burger");
     self.listView = ko.observableArray([]);
 
     //assigns class based on css
@@ -131,6 +130,41 @@ var viewModel = function () {
         }
     }, self);
     self.update = function() {
+
+        // Second ajaxCalls
+        yelpAjaxCall(self.itemSearch(),self.location(),
+            function(results) {
+                console.log('businesses loaded:',results.businesses);
+                results.businesses.forEach( function(obj) {
+                    var id = containsObjectWithName(self.listView(),obj.name);
+                    if (id>-1) {
+                        // update information in listView
+                        console.log(obj)
+
+                    } else {
+                        // content for info or display div
+                        obj.contact = {};
+                        obj.contact.formattedPhone = obj.display_phone;
+                        obj.contact.facebookName = obj.name;
+                        obj.stats = {};
+                        obj.stats.usersCount = obj.review_count;
+                        obj.url = (typeof obj.url === 'undefined') ? '#' : obj.url;
+
+                        //sets wikipedia info to be injected in callback
+                        obj.wikiList = ko.observableArray();
+                        wikiAjaxCall(obj);
+
+                        // to handle location google map info
+                        var latLang = new google.maps.LatLng(obj.location.coordinate.latitude,
+                            obj.location.coordinate.longitude);
+                        obj = setMarkerOptions(self,obj,latLang);
+                        // push names into autcomplete list
+                        self.listNames.push(obj.name);
+                    }
+                    // add the business
+                    self.listView.push(obj);
+                });
+            });
         //FourSqaure API call
         self.clearMarkers();
         var fsURL = 'https://api.foursquare.com/v2/venues/search?near=' + self.location()+'&section=' + self.itemSearch() + '&oauth_token=NOFWGL5PTP4HRY3W1IODQGUKIAG1GA5BV2AOBVGGLJGV0HF4&v=20150318';
@@ -146,102 +180,38 @@ var viewModel = function () {
                 self.listView([]);
                 updateLocation(self.location());
                 map.setOptions({zoom: 14});
-                console.log(response.response);
                 var venues = response.response.venues.slice(1, -1);
 
                 // here we associate a map marker with each venue and append it to google maps                
                 venues.forEach(function (obj) {
-                    // content for info window
-                    var phone = (typeof obj.contact.formattedPhone === 'undefined') ? 'No Contact Information' : obj.contact.formattedPhone;
-                    var fbook = (typeof obj.contact.facebookName === 'undefined') ? 'None' : obj.contact.facebookName;
-                    var users = (typeof obj.stats.usersCount === 'undefined') ? 'No User Information' : obj.stats.usersCount;
-                    var webLink = (typeof obj.url === 'undefined') ? 'No Website' : '<a href="'+obj.url+'">Website</a>';
-                    var here = obj.hereNow.summary;
-
+                    obj.rating='';
+                    obj.rating_img_url='';
+                    obj.snippet_text='';
                     //sets wikipedia info to be injected in callback
                     obj.wikiList = ko.observableArray();
                     wikiAjaxCall(obj);
                     // var wikiList = wikiAjaxCall(obj);
-                    obj.img = getStreetViewImage(obj);
-
-                    var contentString ='<p>' + obj.name + '</p>';
-
-                    var latLang = new google.maps.LatLng(obj.location.lat,obj.location.lng);
-                    var infowindow = new google.maps.InfoWindow({
-                        content: contentString, //add content later, including wikipedia entries and streetview
-                        size: new google.maps.Size(100, 50),
-                        maxWidth: 200,
-                        maxHeight: 100
-                    });
-
-                    var iconBase = 'https://maps.google.com/mapfiles/kml/pushpin/';
-                    var newMarker = new google.maps.Marker({
-                      position: obj.location,
-                      map: map,
-                      title: obj.name, //name of place 
-                      icon: iconBase + 'red-pushpin.png'
-                    });
-                    obj.marker = newMarker;
-                    obj.infowindow = infowindow;
-
-                    //shows the marker
-                    obj.show = function () {
-                        google.maps.event.trigger(obj.marker, 'click');
-                    };
-
-                    // changes color
-                    obj.toggleColor = function () {
-                        var red = 'red-pushpin.png';
-                        var ylw = 'ylw-pushpin.png';
-                        obj.marker.icon = (obj.marker.icon !== self.iconBase+ylw) 
-                            ? self.iconBase + ylw : self.iconBase + red;
-                        // console.log(obj.marker.icon);
-                    }
-
-                    // add animation options
-                    obj.toggleBounce = function() {
-                      if (obj.marker.getAnimation() !== null) {
-                        obj.marker.setAnimation(null);
-                      } else {
-                        // set all other animations to null so only one is bouncing and showing info
-                        venues.forEach(function (obj) {
-                            obj.marker.setAnimation(null);
-                            obj.infowindow.close();
-                        });
-                        // uses the stored info window to associate marker with info
-                        obj.infowindow.open(map, obj.marker);
-                        obj.marker.setAnimation(google.maps.Animation.BOUNCE);
-
-                      }
-                      // OPTIONAL: make sure it doesn't bounce forever
-                      // setTimeout(function(){ obj.marker.setAnimation(null); }, 1500);
-                    };
-
-                    //add dom listener
-                    google.maps.event.addListener(obj.marker, 'click', function() {
-                        //reset icons
-                        self.resetIcons()
-                        // change icon
-                        obj.toggleColor();
-                        // do some animation
-                        obj.toggleBounce();
-                        self.selectedVenue(obj);
-                        map.setCenter(map.setCenter(obj.marker.getPosition()));
-                    });
-
+                    obj.image_url = getStreetViewImage(obj);
+                    // set options for marker, load it, etc.
+                    obj = setMarkerOptions(self,obj,obj.location);                    
                     // push names into autcomplete list
                     self.listNames.push(obj.name);
-
+                    // add the business
+                    self.listView.push(obj);
                 });
-                self.listView(venues);
             }
+
+
         // check that if bad request, then user is shown information
         }).fail(function($faildata) {
             toastr.error("The place you entered cannot be found");
         });
+
         // I do this here to act as zoom for the retrieved information
         self.fitAllMarkers(self.listView());
-    };    
+
+        console.log(self.listView());
+    };
 };
 vm = new viewModel();
 ko.applyBindings(vm);

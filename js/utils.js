@@ -11,6 +11,14 @@ var stringContains = function (oldString, phrase) {
     return (string.indexOf(phrase)>-1);
 };
 
+// checks if obj with name is in array
+function containsObjectWithName(name, array) {
+	for (var i = array.length - 1; i > -1; i--) {
+	    if (array[i].name === name) { return i; }
+	};
+	return -1;
+}
+
 //jquery collapsible management
 $('.collapsible').collapsible({
     defaultOpen: 'section1',
