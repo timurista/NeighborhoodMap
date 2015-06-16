@@ -56,4 +56,4 @@ var yelpAjaxCall = function(term,location,cb) {
 
 		// Send AJAX query via jQuery library.
 		return $.ajax(settings);
-}
+};

@@ -7,20 +7,23 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 		<!-- external css -->
 		<link rel="stylesheet" href="css/bootstrap.min.css">
-		<link rel="stylesheet" href="css/offline-language-english.min.css">
-		<link rel="stylesheet" href="css/offline-theme-dark.min.css">
+		<link rel="stylesheet" href="css/offline-language-english.css">
+		<link rel="stylesheet" href="css/offline-theme-dark.css">
 		<link rel="stylesheet" href="css/toastr.min.css">
 		<!-- user generated css -->
-		<link rel="stylesheet" href="css/custom.min.css">
-		<link rel="stylesheet" media="screen and (min-width: 2000px)" href="css/responsive.min.css">
+		<link rel="stylesheet" href="css/custom.css">
+		<link rel="stylesheet" media="screen and (min-width: 2000px)" href="css/responsive.css">
 
 	</head>
 	<body>
 		<div class="container-fluid">
 			<div class="row search-info">
 				<!-- The search bar user input to filter results -->
-				<div class="col-md-4">
-					<label for="filter">Search</label>
+				<!-- 1 col for really small devices, 4 for bigger ones -->
+				<div class="col-md-4 " data-bind="click: showHide">
+					
+					<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+					<label for="filter" >Search</label>
 					<!-- This includes auto complete -->
 					<button data-bind="click: toggleAutoComplete, text: acToggleDisplay(), css: acButton">{{acToggleDisplay}}</button>
 					<input type="text" id="filter" class="form-control" data-bind="value: filterText, valueUpdate: ['blur']" placeholder="enter search term">
@@ -44,40 +47,83 @@
 				</div>
 			</div>
 
+			<!-- dispalys selected information -->
+			<div class="row displaySelected ">
+				<div data-bind="with: selectedVenue" id="display">
+					<div class="col-xs-6 col-sm-1 col-md-2" data-bind="click: $parent.showHide" >
+						<!-- visual marker for collapsed info -->
+						<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+						<label for="name">Selected: </label>
+						<div data-bind="text: name"></div>
+					</div>
+					
+					<div class="col-xs-6 col-sm-1 col-md-1"> 
+						<label for="phone">Phone: </label> 
+						<div data-bind="text: contact.formattedPhone"></div>
+					</div>
+					<div class="col-xs-4 col-sm-2 col-md-2">
+						<label for="users">Users Today:</label>  
+						<div data-bind="text: stats.usersCount"></div>
+					</div>
+					<div class="col-xs-4 col-sm-3 col-md-3" data-bind="visible: snippet_text.length">
+						<label for="snippet text">What Users are Saying:</label> 
+						<div data-bind="text: snippet_text"></div>
+					</div>
+					<div class="col-xs-4 col-sm-1 col-md-1" data-bind="visible: url.length">
+						<a data-bind="attr: {href: url}" target="_blank">Website</a>
+					</div>
+					<div class="col-xs-4 col-sm-2 col-md-2" data-bind="visible: rating">
+						<label for="rating">Rating</label> 
+						<div data-bind="text: rating"></div>
+						<img data-bind="attr {src: rating_img_url}"/>
+					</div>
+					<div class="col-xs-4 col-sm-4 col-md-4">
+						<img data-bind="attr: {src: image_url}"/>
+					</div>
+				</div>
+			</div>
+
 			<div class="row">
 				<!-- The area to display results ie venues from foursqaure -->
-				<div class="sidebar col-sm-2 col-md-3">
+				
+				<div class="sidebar col-sm-2 col-md-2 collapsible" >
 					<!-- bootstrap css works better with tables than unordered lists -->
-					<table data-bind="foreach:filteredResults" class="table table-striped">
+					<div class="header"></span>Results (Click to Hide/Show)</div>
+					<table data-bind="foreach:filteredResults" class="table table-striped " id="results">
 						<tr>
 							<td class="listItem" data-bind="text: name,  click: show, $parent.setFilter(name) "></td>
 						</tr>
 					</table>
 				</div>
-			    <!-- Display map -->
+				<!-- Display map -->
 				<div class="col-sm-10 col-md-9" >
-				    <div id="map-canvas" class="google-map"></div>
+					<div id="map-canvas" class="google-map"></div>
 				</div>
-			
+			</div>
 
-			</div>
-			</div>
 
 		</div>
-	</body>
+
 	<!-- initial dependencies -->
 	<script src="js/jquery-1.11.2.min.js"></script>
+	<script src="js/jquery.collapsible.min.js"></script>
 	<script src="js/knockout-3.3.0.min.js"></script>
 	<script src="js/offline.min.js"></script>
 	<script src="js/toastr.min.js"></script>
+	<script src="js/oauth-signature.min.js"></script>
+
 	<!-- for autocomplete -->
 	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 	<!-- load google maps -->
 	<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCgjs9IH-A7moEOPrJ7TZs2av44X69slfg"></script>
+	<!-- Yelp ajax call -->
+	<script src="js/yelpAjax.js"></script>
 	<!-- my apps -->
-	<script src="js/utils.min.js"></script>
-	<script src="js/apis.min.js"></script>
-	<script src="js/map.min.js"></script>
-	<script src="js/app.min.js"></script>	
-
+	<script src="js/utils.js"></script>
+	<script src="js/apis.js"></script>
+	<script src="js/map.js"></script>
+	<script src="js/app.js"></script>
+	
+</body>
+	
 </html>

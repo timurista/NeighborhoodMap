@@ -1,7 +1,7 @@
 // TODO: figure out how to do custom bindings for map and ko, but I may use angular in future
 // http://knockoutjs.com/documentation/custom-bindings.html
 // http://knockoutjs.com/documentation/custom-bindings-controlling-descendant-bindings.html
-//h ttps://github.com/hoonzis/KoExtensions
+// https://github.com/hoonzis/KoExtensions
 // https://github.com/manuel-guilbault/knockout.google.maps
 
 // global map variable using google maps api
@@ -19,7 +19,7 @@ var viewModel = function () {
     self.selectedVenue = ko.observable({
         name:'none',
         contact:{},
-        url:'#',
+        url:'',
         stats:{usersCount:0},
         wikiList:['none'],
         image_url:'#',
@@ -30,10 +30,17 @@ var viewModel = function () {
 
     // toggles visiblity
     self.showHide = function(viewModel, event) {
-        $(event.currentTarget).siblings().slideToggle();
-        $(event.currentTarget).find('.glyphicon').toggleClass('glyphicon-minus');
-        $(event.currentTarget).find('.glyphicon').toggleClass('glyphicon-plus');
-    }
+        var offClass = 'glyphicon-minus';
+        var onClass = 'glyphicon-plus';
+        var icon = $(event.currentTarget).find('.glyphicon');
+        if (icon.hasClass(offClass)) {
+            $(event.currentTarget).siblings().slideUp();
+        } else {
+            $(event.currentTarget).siblings().slideDown();
+        }
+        icon.toggleClass(onClass);
+        icon.toggleClass(offClass);
+    };
 
     self.iconBase = 'https://maps.google.com/mapfiles/kml/pushpin/';
     self.resetIcons = function() {
@@ -107,6 +114,7 @@ var viewModel = function () {
                 item.marker.setMap(map);
             });
             // return all results if filter doesn't exist
+            // make markers fit on google map
             self.fitAllMarkers(self.listView());
             return self.listView();
         }
@@ -131,17 +139,62 @@ var viewModel = function () {
     }, self);
     self.update = function() {
 
-        // Second ajaxCalls
+        //FourSqaure API call
+        self.clearMarkers();
+        var fsURL = 'https://api.foursquare.com/v2/venues/search?near=' + self.location()+'&section=' + self.itemSearch() + '&oauth_token=NOFWGL5PTP4HRY3W1IODQGUKIAG1GA5BV2AOBVGGLJGV0HF4&v=20150318';
+        //ajax call for the venues
+        $.ajax({
+            url: fsURL,
+            dataType: "json",
+            error: function (argument) {
+                Offline.check();                
+            },
+            success: function(response) {
+                self.listView([]);
+                updateLocation(self.location());
+                map.setOptions({zoom: 14});
+                var venues = response.response.venues.slice(1, -1);
+                console.log('veneus from FourSqaure loaded:',venues);
+
+                // here we associate a map marker with each venue and append it to google maps
+                venues.forEach(function (obj) {
+                    obj.rating='';
+                    obj.rating_img_url='';
+                    obj.snippet_text='';
+                    // setting url for website to be # if not defined
+                    obj.url = (typeof obj.url === 'undefined') ? '' : obj.url;
+                    //sets wikipedia info to be injected in callback
+                    obj.wikiList = ko.observableArray();
+                    wikiAjaxCall(obj);
+                    obj.image_url = getStreetViewImage(obj);
+                    // set options for marker, load it, etc.
+                    obj = setMarkerOptions(self,obj,obj.location);                    
+                    // push names into autcomplete list
+                    self.listNames.push(obj.name);
+                    // add the venue
+                    self.listView.push(obj);
+                });
+            }
+        // check that if bad request, then user is shown information
+        }).fail(function($faildata) {
+            toastr.error("The place you entered cannot be found");
+        });
+
+        // Second ajaxCalls, this takes a callback function to handle a success
         yelpAjaxCall(self.itemSearch(),self.location(),
             function(results) {
                 console.log('businesses loaded:',results.businesses);
                 results.businesses.forEach( function(obj) {
                     var id = containsObjectWithName(self.listView(),obj.name);
                     if (id>-1) {
-                        // update information in listView
-                        console.log(obj)
+                        // update information if obj is already in listView
+                        self.listView()[id].url = obj.url;
+                        self.listView()[id].rating = obj.rating;
+                        self.listView()[id].rating_img_url = obj.rating_img_url;
+                        self.listView()[id].snippet_text = obj.snippet_text;
 
                     } else {
+                        // add this new obj to the listView
                         // content for info or display div
                         obj.contact = {};
                         obj.contact.formattedPhone = obj.display_phone;
@@ -165,52 +218,8 @@ var viewModel = function () {
                     self.listView.push(obj);
                 });
             });
-        //FourSqaure API call
-        self.clearMarkers();
-        var fsURL = 'https://api.foursquare.com/v2/venues/search?near=' + self.location()+'&section=' + self.itemSearch() + '&oauth_token=NOFWGL5PTP4HRY3W1IODQGUKIAG1GA5BV2AOBVGGLJGV0HF4&v=20150318';
-        //ajax call for the venues
-        $.ajax({
-            url: fsURL,
-            dataType: "json",
-            error: function (argument) {
-                Offline.check();
-                
-            },
-            success: function(response) {
-                self.listView([]);
-                updateLocation(self.location());
-                map.setOptions({zoom: 14});
-                var venues = response.response.venues.slice(1, -1);
-
-                // here we associate a map marker with each venue and append it to google maps                
-                venues.forEach(function (obj) {
-                    obj.rating='';
-                    obj.rating_img_url='';
-                    obj.snippet_text='';
-                    //sets wikipedia info to be injected in callback
-                    obj.wikiList = ko.observableArray();
-                    wikiAjaxCall(obj);
-                    // var wikiList = wikiAjaxCall(obj);
-                    obj.image_url = getStreetViewImage(obj);
-                    // set options for marker, load it, etc.
-                    obj = setMarkerOptions(self,obj,obj.location);                    
-                    // push names into autcomplete list
-                    self.listNames.push(obj.name);
-                    // add the business
-                    self.listView.push(obj);
-                });
-            }
-
-
-        // check that if bad request, then user is shown information
-        }).fail(function($faildata) {
-            toastr.error("The place you entered cannot be found");
-        });
-
-        // I do this here to act as zoom for the retrieved information
+        // This zooms in on the retrieved information
         self.fitAllMarkers(self.listView());
-
-        console.log(self.listView());
     };
 };
 vm = new viewModel();

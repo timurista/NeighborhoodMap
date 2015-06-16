@@ -11,13 +11,15 @@ var stringContains = function (oldString, phrase) {
     return (string.indexOf(phrase)>-1);
 };
 
-// checks if obj with name is in array
+// checks if obj with name is in array and returns the index
 function containsObjectWithName(name, array) {
 	for (var i = array.length - 1; i > -1; i--) {
 	    if (array[i].name === name) { return i; }
-	};
+	}
 	return -1;
 }
+
+//TODO add default class to hold retrieved api objects
 
 //jquery collapsible management
 $('.collapsible').collapsible({

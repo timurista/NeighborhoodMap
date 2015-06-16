@@ -4,7 +4,7 @@ var getStreetViewImage = function (obj) {
     var params = 'size=200x100&location=' + obj.location.lat + ', ' + obj.location.lng;
     var streetViewUrl = 'http://maps.googleapis.com/maps/api/streetview?' + params;
     return streetViewUrl;
-}
+};
 
 var setMarkerOptions = function(self,obj,latLang) {
     // var obj = obj;
@@ -28,6 +28,9 @@ var setMarkerOptions = function(self,obj,latLang) {
     obj.marker = newMarker;
     obj.infowindow = infowindow;
 
+    //set default animation
+    obj.marker.setAnimation(null);
+
     //shows the marker
     obj.show = function () {
         google.maps.event.trigger(obj.marker, 'click');
@@ -35,11 +38,10 @@ var setMarkerOptions = function(self,obj,latLang) {
 
     // changes color
     obj.toggleColor = function () {
-        var red = 'red-pushpin.png';
-        var ylw = 'ylw-pushpin.png';
-        obj.marker.icon = (obj.marker.icon !== self.iconBase+ylw) 
-            ? self.iconBase + ylw : self.iconBase + red;
-    }
+        var off = 'red-pushpin.png';
+        var on = 'ylw-pushpin.png';
+        obj.marker.icon = (obj.marker.icon !== self.iconBase + on) ? self.iconBase + on : obj.marker = self.iconBase + off;
+    };
 
     // add animation options
     obj.toggleBounce = function() {
@@ -53,13 +55,11 @@ var setMarkerOptions = function(self,obj,latLang) {
         obj.infowindow.open(map, obj.marker);
         obj.marker.setAnimation(google.maps.Animation.BOUNCE);
       }
-      // OPTIONAL: make sure it doesn't bounce forever
-      // setTimeout(function(){ obj.marker.setAnimation(null); }, 1500);
-    };
+   };
 
     //add dom listener
     google.maps.event.addListener(obj.marker, 'click', function() {
-        self.resetIcons()
+        self.resetIcons();
         // change icon
         obj.toggleColor();
         // do some animation
@@ -68,7 +68,7 @@ var setMarkerOptions = function(self,obj,latLang) {
         map.setCenter(map.setCenter(obj.marker.getPosition()));
     });
     return obj;
-}
+};
 
 //get wikipedia articles related to name of object
 var wikiAjaxCall = function (obj) {    
@@ -94,5 +94,4 @@ var wikiAjaxCall = function (obj) {
             clearTimeout(wikiRequestTimeout);
             },
     } );
-    // return wikiEntries;
 };
